@@ -11,7 +11,6 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='/', intents=intents)
 
-# Initialize variables to keep track of trivia statistics
 total_questions_asked = 0
 total_correct_answers = 0
 user_scores = {}
@@ -73,7 +72,7 @@ def get_timestamp():
     return time.strftime('%Y-%m-%d %H:%M:%S')
 
 
-# Your trivia questions here
+
 trivia_questions = [
     {"question": "What is the capital of France?", "answer": "Paris"},
     {"question": "How many continents are there in the world?", "answer": "7"},
@@ -166,5 +165,5 @@ trivia_questions = [
     {"question": "What is the highest mountain in North America?", "answer": "Denali"},
 ]
 
-# Replace 'YOUR_BOT_TOKEN' with your actual bot token
+
 bot.run('Redacted')
