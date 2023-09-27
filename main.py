@@ -38,7 +38,7 @@ async def trivia(ctx):
     try:
         response = await bot.wait_for(
             'message',
-            timeout=20,  # Set a time limit for answering (in seconds)
+            timeout=20,  
             check=lambda message: message.author == ctx.author
         )
         elapsed_time = time.time() - start_time
