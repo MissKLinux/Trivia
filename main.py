@@ -167,4 +167,4 @@ trivia_questions = [
 ]
 
 # Replace 'YOUR_BOT_TOKEN' with your actual bot token
-bot.run('MTE1NjU2MjkxNjMyMjA3MDUyOA.GVHJ0r.k7O8-EXgqQ2fxK8f973hK_IA4k6efAHUa7UKFY')
+bot.run('Redacted')
