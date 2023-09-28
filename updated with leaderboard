@@ -3,6 +3,7 @@ from discord.ext import commands
 import random
 import asyncio
 import time
+import json
 
 intents = discord.Intents.default()
 intents.typing = False
@@ -12,7 +13,11 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='/', intents=intents)
 
 
-user_data = {}
+try:
+    with open('user_data.json', 'r') as file:
+        user_data = json.load(file)
+except FileNotFoundError:
+    user_data = {}
 
 @bot.event
 async def on_ready():
@@ -33,16 +38,16 @@ async def trivia(ctx):
         )
         elapsed_time = time.time() - start_time
 
-       
+     
         if response.content.lower() == question['answer'].lower():
             result = "Correct"
         else:
             result = "Incorrect"
 
-       
+
         log_answer(ctx.author, question, response.content, result, elapsed_time)
 
-     
+    
         await ctx.send(f'Trivia: Your answer is {result}! The correct answer is: {question["answer"]}')
     except asyncio.TimeoutError:
         result = "Timeout"
@@ -52,8 +57,8 @@ async def trivia(ctx):
 @bot.command()
 async def leaderboard(ctx):
     sorted_user_data = sorted(user_data.items(), key=lambda item: item[1]['score'], reverse=True)
-    leaderboard = "**Leaderboard:**\n"
 
+    leaderboard = "**Leaderboard:**\n"
     for i, (user_id, data) in enumerate(sorted_user_data, start=1):
         user = bot.get_user(user_id)
         if user:
@@ -61,42 +66,52 @@ async def leaderboard(ctx):
             num_questions = data['num_questions']
             total_time = data['total_time']
             average_time = total_time / num_questions if num_questions > 0 else 0
-
             leaderboard += f"{i}. {user.name}: Score: {score}, Average Time: {average_time:.2f}s\n"
 
-    
-    leaderboard += "\n**Top 3 with Most Consecutive Correct Answers:**\n"
-    sorted_consecutive_data = sorted(user_data.items(), key=lambda item: item[1].get('consecutive_correct', 0), reverse=True)
-    for i, (user_id, data) in enumerate(sorted_consecutive_data[:3], start=1):
-        user = bot.get_user(user_id)
-        if user:
-            consecutive_correct = data.get('consecutive_correct', 0)
-            leaderboard += f"{i}. {user.name}: Consecutive Correct: {consecutive_correct}\n"
-
-
-    leaderboard += "\n**Top 1 with Most Wrong Answers:**\n"
-    sorted_wrong_data = sorted(user_data.items(), key=lambda item: item[1].get('wrong_answers', 0), reverse=True)
-    for i, (user_id, data) in enumerate(sorted_wrong_data[:1], start=1):
-        user = bot.get_user(user_id)
-        if user:
-            wrong_answers = data.get('wrong_answers', 0)
-            leaderboard += f"{i}. {user.name}: Wrong Answers: {wrong_answers}\n"
-
     await ctx.send(leaderboard)
+
+
+
+@bot.command()
+async def save_data(ctx):
+    # Save user data to the JSON file
+    with open('user_data.json', 'w') as file:
+        json.dump(user_data, file, indent=4)
+    await ctx.send("User data has been saved.")
 
 def log_answer(user, question, answer, result, elapsed_time):
     user_id = user.id
     if user_id not in user_data:
-        user_data[user_id] = {'score': 0, 'total_time': 0, 'num_questions': 0, 'consecutive_correct': 0, 'wrong_answers': 0}
+        user_data[user_id] = {'score': 0, 'total_time': 0, 'num_questions': 0}
     user_data[user_id]['num_questions'] += 1
     user_data[user_id]['total_time'] += elapsed_time
 
     if result == "Correct":
         user_data[user_id]['score'] += 1
-        user_data[user_id]['consecutive_correct'] += 1
-    else:
-        user_data[user_id]['consecutive_correct'] = 0
-        user_data[user_id]['wrong_answers'] += 1
+
+    print(user_data)  # Debugging: Print user_data dictionary
+
+    def log_answer(user, question, answer, result, elapsed_time):
+        user_id = user.id
+
+      
+        if user_id in user_data:
+            user_data[user_id]['score'] += 1 if result == "Correct" else 0
+            user_data[user_id]['total_time'] += elapsed_time
+            user_data[user_id]['num_questions'] += 1
+        else:
+            user_data[user_id] = {
+                'score': 1 if result == "Correct" else 0,
+                'total_time': elapsed_time,
+                'num_questions': 1
+            }
+
+ 
+        with open('user_data.json', 'w') as file:
+            json.dump(user_data, file, indent=4)
+
+    with open('user_data.json', 'w') as file:
+        json.dump(user_data, file, indent=4)
 
 
 trivia_questions = [
@@ -192,4 +207,4 @@ trivia_questions = [
 ]
 
 
-bot.run('RRedacted')
+bot.run('Redacted')
