@@ -197,4 +197,4 @@ trivia_questions = [
 ]
 
 
-bot.run('MTE1NjU2MjkxNjMyMjA3MDUyOA.GDbLZR.ooolYvtwmUyD6uxCBpO0pAdr_L5jpZk-o3IaKo')
+bot.run('Redacted')
